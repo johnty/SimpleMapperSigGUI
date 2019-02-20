@@ -118,6 +118,7 @@ void MapperInputThread::sigUpdate(mapper_signal sig, mapper_id instance, const v
                 }
                 lastVal = (double) v[0];
                 DBG(" f; set to "<<lastVal);
+                break;
             }
             case 'd': {
                 double *v = (double*)value;
