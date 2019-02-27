@@ -10,23 +10,30 @@
 
 #include "MapperInputThread.h"
 
-MapperInputThread::MapperInputThread(): Thread("MapperInputThread")
+MapperInputThread::MapperInputThread(): Thread("MapperInputThread"),
+                                        myMapperDev(new mapper::Device("inputvis")),
+                                        myMapperDB(new mapper::Database(MAPPER_OBJ_ALL))
 {
-    myMapperDev = new mapper::Device("inputvis");
+    //myMapperDev = new mapper::Device("inputvis");
+    
     mapper::Signal sig = myMapperDev->add_input_signal("in1", 1, 'f', 0, 0, 0, &MapperInputThread::sigUpdateHandler, this);
-    myInputSigs.push_back(sig);
+    myMapperDev->add_input_signal("in2", 1, 'f', 0, 0, 0, &MapperInputThread::sigUpdateHandler, this);
+    myMapperDev->add_input_signal("in3", 1, 'f', 0, 0, 0, &MapperInputThread::sigUpdateHandler, this);
+    myMapperDev->add_input_signal("in4", 1, 'f', 0, 0, 0, &MapperInputThread::sigUpdateHandler, this);
+    //myInputSigs.push_back(&sig);
     
     
-    myMapperDB.subscribe(MAPPER_OBJ_ALL);
-    myMapperDB.add_device_callback(devActionHandler, this);
-    myMapperDB.add_signal_callback(sigActionHandler, this);
-    myMapperDB.add_map_callback(mapActionHandler, this);
+    myMapperDB->subscribe(MAPPER_OBJ_ALL);
+    myMapperDB->add_device_callback(devActionHandler, this);
+    myMapperDB->add_signal_callback(sigActionHandler, this);
+    myMapperDB->add_map_callback(mapActionHandler, this);
     
 }
 
 MapperInputThread::~MapperInputThread()
 {
     DBG("stopping mapper thread...\n");
+    //delete myMapperDev;
     int res = stopThread(2000);
     DBG("thread stopped. res=" << res);
     
@@ -38,7 +45,7 @@ void MapperInputThread::run()
     while (!threadShouldExit())
     {
         myMapperDev->poll(10);
-        myMapperDB.poll(10);
+        myMapperDB->poll(10);
     }
     DBG(" mapper thread end\n");
 }
@@ -118,6 +125,14 @@ void MapperInputThread::sigUpdate(mapper_signal sig, mapper_id instance, const v
                 }
                 lastVal = (double) v[0];
                 DBG(" f; set to "<<lastVal);
+                if (strcmp("in1",  mapper_signal_name(sig))==0)
+                    lastVals[0] = lastVal;
+                if (strcmp("in2",  mapper_signal_name(sig))==0)
+                    lastVals[1] = lastVal;
+                if (strcmp("in3",  mapper_signal_name(sig))==0)
+                    lastVals[2] = lastVal;
+                if (strcmp("in4",  mapper_signal_name(sig))==0)
+                    lastVals[3] = lastVal;
                 break;
             }
             case 'd': {

@@ -35,8 +35,10 @@ private:
     
     ScopedPointer<MapperInputThread> myMapperInput;
     
-    
     Slider sigSlider;
+    Slider sigSlider1;
+    Slider sigSlider2;
+    Slider sigSlider3;
     Label sigLabel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)

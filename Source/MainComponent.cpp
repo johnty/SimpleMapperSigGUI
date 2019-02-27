@@ -21,12 +21,19 @@ MainComponent::MainComponent()
     
     addAndMakeVisible(sigSlider);
     sigSlider.setRange(0, 10.0);
-    sigSlider.setTextValueSuffix("(units)");
+    addAndMakeVisible(sigSlider1);
+    sigSlider1.setRange(0, 10.0);
+    addAndMakeVisible(sigSlider2);
+    sigSlider2.setRange(0, 10.0);
+    addAndMakeVisible(sigSlider3);
+    sigSlider3.setRange(0, 10.0);
+    //sigSlider.setTextValueSuffix("(units)");
     addAndMakeVisible(sigLabel);
-    sigLabel.setText("label", dontSendNotification);
+    sigLabel.setText("inputvis", dontSendNotification);
     sigLabel.attachToComponent(&sigSlider, true);
     
     setSize (600, 400);
+    MapperInputThread myThread;
 }
 
 MainComponent::~MainComponent()
@@ -50,14 +57,22 @@ void MainComponent::resized()
     // This is called when the MainComponent is resized.
     // If you add any child components, this is where you should
     // update their positions.
-    auto sliderLeft = 120;
+    auto sliderLeft = 50;
     sigSlider.setBounds(sliderLeft, 20, getWidth() - sliderLeft - 10 , 25);
+    sigSlider1.setBounds(sliderLeft, 40, getWidth() - sliderLeft - 10 , 25);
+    sigSlider2.setBounds(sliderLeft, 60, getWidth() - sliderLeft - 10 , 25);
+    sigSlider3.setBounds(sliderLeft, 80, getWidth() - sliderLeft - 10 , 25);
 }
 
 void MainComponent::changeListenerCallback(ChangeBroadcaster *source)
 {
     double val = myMapperInput->getLastVal();
     DBG("main component update! val="<<val);
-    sigSlider.setValue(val);
+    //sigSlider.setValue(val);
+    const double* vals = myMapperInput->getLastVals();
+    sigSlider.setValue(vals[0]);
+    sigSlider1.setValue(vals[1]);
+    sigSlider2.setValue(vals[2]);
+    sigSlider3.setValue(vals[3]);
     
 }

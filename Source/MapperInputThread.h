@@ -52,12 +52,14 @@ public:
     void sigUpdate(mapper_signal sig, mapper_id instance, const void *value,
                        int count, mapper_timetag_t *timetag);
     const double getLastVal() {return lastVal;}
+    const double* getLastVals() {return lastVals;}
     
 private:
-    mapper::Database myMapperDB;
-    ScopedPointer<mapper::Device> myMapperDev;
-    std::vector<mapper::Signal> myInputSigs;
+    std::unique_ptr<mapper::Database> myMapperDB;
+    std::unique_ptr<mapper::Device> myMapperDev;
+    //std::vector<mapper::Signal*> myInputSigs;
     
     double lastVal;
+    double lastVals[4];
     
 };
