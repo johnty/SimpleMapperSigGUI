@@ -15,6 +15,7 @@ MainComponent::MainComponent()
     
     myMapperInput = new MapperInputThread();
     myMapperInput->addChangeListener(this);
+    myMapperInput->addActionListener(this);
     DBG("MAIN: start mapper thread...\n");
     myMapperInput->startThread();
     DBG("MAIN: thread started!\n");
@@ -74,5 +75,36 @@ void MainComponent::changeListenerCallback(ChangeBroadcaster *source)
     sigSlider1.setValue(vals[1]);
     sigSlider2.setValue(vals[2]);
     sigSlider3.setValue(vals[3]);
+    
+}
+
+void MainComponent::actionListenerCallback(const String &message)
+{
+    bool is_dev = false, is_map = false, is_sig = false, is_add = false, is_mod = false, is_rem = false;
+    //DBG(message);
+    if (message.contains("dev")) is_dev = true;
+    if (message.contains("sig")) is_sig = true;
+    if (message.contains("map")) is_map = true;
+    
+    //there must be a more elegant way to do this...
+    mapper_record_event type = (mapper_record_event)std::strtod(message.substring(4).toUTF8(), nullptr);
+    //DBG("type:"<<type);
+    switch (type) {
+        case MAPPER_ADDED:
+            is_add = true;
+            break;
+        case MAPPER_REMOVED:
+            is_rem = true;
+            break;
+        case MAPPER_MODIFIED:
+            is_mod = true;
+            break;
+        default:
+            break;
+    }
+    
+    if (is_sig && is_add) {
+    
+    }
     
 }

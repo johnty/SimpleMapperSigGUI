@@ -16,14 +16,11 @@ MapperInputThread::MapperInputThread(): Thread("MapperInputThread"),
 {
     //myMapperDev = new mapper::Device("inputvis");
     
-    mapper::Signal sig = myMapperDev->add_input_signal("in1", 1, 'f', 0, 0, 0, &MapperInputThread::sigUpdateHandler, this);
-    myMapperDev->add_input_signal("in2", 1, 'f', 0, 0, 0, &MapperInputThread::sigUpdateHandler, this);
-    myMapperDev->add_input_signal("in3", 1, 'f', 0, 0, 0, &MapperInputThread::sigUpdateHandler, this);
-    myMapperDev->add_input_signal("in4", 1, 'f', 0, 0, 0, &MapperInputThread::sigUpdateHandler, this);
+    //mapper::Signal sig = myMapperDev->add_input_signal("in1", 1, 'f', 0, 0, 0, &MapperInputThread::sigUpdateHandler, (void*) this);
     //myInputSigs.push_back(&sig);
     
     
-    myMapperDB->subscribe(MAPPER_OBJ_ALL);
+    myMapperDB->subscribe(MAPPER_OBJ_OUTPUT_SIGNALS);
     myMapperDB->add_device_callback(devActionHandler, this);
     myMapperDB->add_signal_callback(sigActionHandler, this);
     myMapperDB->add_map_callback(mapActionHandler, this);
@@ -34,7 +31,7 @@ MapperInputThread::~MapperInputThread()
 {
     DBG("stopping mapper thread...\n");
     //delete myMapperDev;
-    int res = stopThread(2000);
+    int res = stopThread(5000);
     DBG("thread stopped. res=" << res);
     
 }
@@ -81,16 +78,69 @@ void MapperInputThread::mapActionHandler(mapper_database db,
 void MapperInputThread::devActionFn(mapper_device dev, mapper_record_event action) const
 {
     //DBG("instance dev action!");
+    String msg = "dev ";
+    msg+= (int)action;
+    sendActionMessage(msg);
 }
 
 void MapperInputThread::sigActionFn(mapper_signal sig, mapper_record_event action) const
 {
     //DBG("instance sig action!");
+    
+    mapper::Signal Sig(sig);
+    bool isRem = false;
+    if (action == MAPPER_REMOVED) isRem = true;
+    
+    DBG("sigAction - name: "<<Sig.name()<<" dir: "<<Sig.direction()<<" isRem: "<<(int)isRem);
+    
+    if ((action == MAPPER_ADDED) && (Sig.direction() == MAPPER_DIR_OUTGOING)) {
+    
+        String name = Sig.name();
+        name+= "_l";
+        mapper::Signal newSig = myMapperDev->add_input_signal(name.toRawUTF8(), Sig.length(), 'f', 0, 0, 0, &MapperInputThread::sigUpdateHandler, (void*) this); //do we care about sig units, min/max etc?
+        //DBG("trying to map "<<Sig.name()<<" to "<<newSig.name()<<"...");
+        DBG("OUTPUT FOUND! adding sig listener: "<<newSig.name());
+        while (!myMapperDev->ready())
+            myMapperDev->poll(50);
+        
+        
+        mapper::Map map(Sig, newSig);
+        
+        map.push(); //do we need to wait till ready?
+        while (!map.ready()) {
+            myMapperDev->poll(50);
+            DBG(".");
+        }
+        DBG("... done!");
+        
+        
+        //NOTE: one issue right now is if we listen for all, a new outgoing map will trigger a sig action for some reason.
+    }
+    
+    if ((action == MAPPER_REMOVED) && (Sig.direction() == MAPPER_DIR_OUTGOING)) {
+        String name = Sig.name();
+        name+= "_l";
+        DBG("trying to remove "<<name);
+        mapper::Signal mysig = myMapperDev->signal(name.toRawUTF8());
+        if ((mapper_signal)mysig != nullptr) {
+            myMapperDev->remove_signal(mysig);
+        }
+    }
+    
+
+    
+    
+    String msg = "sig ";
+    msg+= (int)action;
+    sendActionMessage(msg); //maybe we don't need to notify UI for this...
 }
 
 void MapperInputThread::mapActionFn(mapper_map map, mapper_record_event action) const
 {
     //DBG("instance map action!");
+    String msg = "map ";
+    msg+= (int)action;
+    sendActionMessage(msg);
 }
 
 void MapperInputThread::sigUpdateHandler(mapper_signal sig, mapper_id instance, const void *value,

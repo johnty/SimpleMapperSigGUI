@@ -13,7 +13,7 @@
 #include "mapper/mapper_cpp.h"
 #include "JuceHeader.h"
 
-class MapperInputThread : public Thread, public ChangeBroadcaster
+class MapperInputThread : public Thread, public ChangeBroadcaster, public ActionBroadcaster
 {
     
 public:
@@ -55,8 +55,8 @@ public:
     const double* getLastVals() {return lastVals;}
     
 private:
-    std::unique_ptr<mapper::Database> myMapperDB;
     std::unique_ptr<mapper::Device> myMapperDev;
+    std::unique_ptr<mapper::Database> myMapperDB;
     //std::vector<mapper::Signal*> myInputSigs;
     
     double lastVal;
