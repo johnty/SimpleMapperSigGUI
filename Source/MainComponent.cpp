@@ -34,7 +34,6 @@ MainComponent::MainComponent()
     sigLabel.attachToComponent(&sigSlider, true);
     
     setSize (600, 400);
-    MapperInputThread myThread;
 }
 
 MainComponent::~MainComponent()
@@ -68,7 +67,7 @@ void MainComponent::resized()
 void MainComponent::changeListenerCallback(ChangeBroadcaster *source)
 {
     double val = myMapperInput->getLastVal();
-    DBG("main component update! val="<<val);
+    //DBG("main component update! val="<<val);
     //sigSlider.setValue(val);
     const double* vals = myMapperInput->getLastVals();
     sigSlider.setValue(vals[0]);
