@@ -99,24 +99,18 @@ void MapperInputThread::sigActionFn(mapper_signal sig, mapper_record_event actio
         String name = Sig.name();
         name+= "_l";
         mapper::Signal newSig = myMapperDev->add_input_signal(name.toRawUTF8(), Sig.length(), 'f', 0, 0, 0, &MapperInputThread::sigUpdateHandler, (void*) this); //do we care about sig units, min/max etc?
-        //DBG("trying to map "<<Sig.name()<<" to "<<newSig.name()<<"...");
-        DBG("OUTPUT FOUND! adding sig listener: "<<newSig.name());
-        while (!myMapperDev->ready())
+        while (!myMapperDev->ready()) {
             myMapperDev->poll(50);
-
-
-        mapper::Map map(Sig, newSig);
-        
-        map.push(); //do we need to wait till ready?
-        while (!map.ready()) {
-            myMapperDev->poll(50);
-            DBG(".");
         }
-        DBG("... done!");
-        
-        
-        
-        //NOTE: one issue right now is if we listen for all, a new outgoing map will trigger a sig action for some reason.
+        if ((mapper_signal)newSig != nullptr) {
+            //DBG("trying to map "<<Sig.name()<<" to "<<newSig.name()<<"...");
+            DBG("OUTPUT FOUND! adding new input sig: "<<newSig.name());
+            while (!myMapperDev->ready())
+                myMapperDev->poll(50);
+             mapper::Map map(Sig, newSig);
+             map.push(); //do we need to wait till ready?
+            
+        }
     }
     
     if ((action == MAPPER_REMOVED) && (Sig.direction() == MAPPER_DIR_OUTGOING)) {
@@ -126,6 +120,11 @@ void MapperInputThread::sigActionFn(mapper_signal sig, mapper_record_event actio
         mapper::Signal mysig = myMapperDev->signal(name.toRawUTF8());
         if ((mapper_signal)mysig != nullptr) {
             myMapperDev->remove_signal(mysig);
+            DBG(name<<"    removed!\n");
+            
+        }
+        else {
+            DBG(name<<"    not found!\n");
         }
     }
     
@@ -153,7 +152,7 @@ void MapperInputThread::sigUpdateHandler(mapper_signal sig, mapper_id instance, 
 void MapperInputThread::sigUpdate(mapper_signal sig, mapper_id instance, const void *value,
                        int count, mapper_timetag_t *timetag)
 {
-    return;
+    //return;
     DBG("instance sig update function");
     
     if (value) {
