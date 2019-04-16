@@ -10,6 +10,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "MapperInputThread.h"
+#include "SigDisplayWindow.h"
 #include "mapper/mapper_cpp.h"
 
 //==============================================================================
@@ -36,6 +37,9 @@ private:
     // Your private member variables go here...
     
     ScopedPointer<MapperInputThread> myMapperInput;
+    ScopedPointer<SigDisplayWindow> mySigDisplay;
+    
+    Array<Component::SafePointer<Component>> windows;
     
     std::vector<Slider> mySigSliders;
     

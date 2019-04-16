@@ -33,7 +33,26 @@ MainComponent::MainComponent()
     sigLabel.setText("inputvis", dontSendNotification);
     sigLabel.attachToComponent(&sigSlider, true);
     
+    //sig display window
+    mySigDisplay = new SigDisplayWindow(0);
+    mySigDisplay->addToDesktop (ComponentPeer::windowIsTemporary);
+    //windows.add (mySigDisplay);
+    
     setSize (600, 400);
+    
+    Rectangle<int> area (0, 0, 400, 400);
+    RectanglePlacement placement (RectanglePlacement::xLeft
+                                  | RectanglePlacement::yBottom
+                                  | RectanglePlacement::doNotResize);
+    
+    Rectangle<int> result(this->getRight(), this->getY(), area.getWidth(), area.getHeight());
+    //auto result = placement.appliedTo (area, Desktop::getInstance().getDisplays()
+    //                                   .getMainDisplay().userArea.reduced (20));
+    
+    mySigDisplay->setBounds (result);
+    mySigDisplay->setVisible (true);
+    
+    
 }
 
 MainComponent::~MainComponent()
@@ -80,7 +99,7 @@ void MainComponent::changeListenerCallback(ChangeBroadcaster *source)
 void MainComponent::actionListenerCallback(const String &message)
 {
     bool is_dev = false, is_map = false, is_sig = false, is_add = false, is_mod = false, is_rem = false;
-    //DBG(message);
+    DBG(message);
     if (message.contains("dev")) is_dev = true;
     if (message.contains("sig")) is_sig = true;
     if (message.contains("map")) is_map = true;
@@ -91,6 +110,7 @@ void MainComponent::actionListenerCallback(const String &message)
     switch (type) {
         case MAPPER_ADDED:
             is_add = true;
+            
             break;
         case MAPPER_REMOVED:
             is_rem = true;
@@ -102,8 +122,12 @@ void MainComponent::actionListenerCallback(const String &message)
             break;
     }
     
-    if (is_sig && is_add) {
-    
+    if (is_map && is_add) {
+        mySigDisplay->addBall();
     }
+    if (is_map && is_rem) {
+        mySigDisplay->removeBall();
+    }
+    
     
 }
