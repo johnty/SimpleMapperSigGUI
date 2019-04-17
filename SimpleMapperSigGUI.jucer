@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="oa55xW" name="SimpleMapperSigGUI" projectType="guiapp" jucerVersion="5.4.2">
+<JUCERPROJECT id="oa55xW" name="SimpleMapperSigGUI" projectType="guiapp" jucerVersion="5.4.3">
   <MAINGROUP id="ZRlSUj" name="SimpleMapperSigGUI">
     <GROUP id="{258C0E47-FD46-5BCE-C7E2-8096A4185184}" name="Source">
       <FILE id="MnPWV2" name="MapperInputThread.cpp" compile="1" resource="0"
@@ -11,6 +11,8 @@
       <FILE id="k8Jzyd" name="MainComponent.cpp" compile="1" resource="0"
             file="Source/MainComponent.cpp"/>
       <FILE id="gSEprq" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+      <FILE id="vscPwI" name="SigDisplayWindow.h" compile="0" resource="0"
+            file="Source/SigDisplayWindow.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>

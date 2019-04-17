@@ -95,7 +95,6 @@ void MapperInputThread::sigActionFn(mapper_signal sig, mapper_record_event actio
     DBG("sigAction - name: "<<Sig.name()<<" dir: "<<Sig.direction()<<" isRem: "<<(int)isRem);
     
     if ((action == MAPPER_ADDED) && (Sig.direction() == MAPPER_DIR_OUTGOING)) {
-    
         String name = Sig.name();
         name+= "_l";
         mapper::Signal newSig = myMapperDev->add_input_signal(name.toRawUTF8(), Sig.length(), 'f', 0, 0, 0, &MapperInputThread::sigUpdateHandler, (void*) this); //do we care about sig units, min/max etc?
@@ -105,14 +104,16 @@ void MapperInputThread::sigActionFn(mapper_signal sig, mapper_record_event actio
         if ((mapper_signal)newSig != nullptr) {
             //DBG("trying to map "<<Sig.name()<<" to "<<newSig.name()<<"...");
             DBG("OUTPUT FOUND! adding new input sig: "<<newSig.name());
-            while (!myMapperDev->ready())
-                myMapperDev->poll(50);
+//            while (!myMapperDev->ready())
+//                myMapperDev->poll(50);
              mapper::Map map(Sig, newSig);
              map.push(); //do we need to wait till ready?
-            
+             while (!map.ready()) {
+                myMapperDev->poll(50);
+             }
+             DBG("\n mapped "<<Sig.name()<<"->"<<newSig.name());
         }
     }
-    
     if ((action == MAPPER_REMOVED) && (Sig.direction() == MAPPER_DIR_OUTGOING)) {
         String name = Sig.name();
         name+= "_l";
@@ -121,7 +122,6 @@ void MapperInputThread::sigActionFn(mapper_signal sig, mapper_record_event actio
         if ((mapper_signal)mysig != nullptr) {
             myMapperDev->remove_signal(mysig);
             DBG(name<<"    removed!\n");
-            
         }
         else {
             DBG(name<<"    not found!\n");
@@ -131,7 +131,7 @@ void MapperInputThread::sigActionFn(mapper_signal sig, mapper_record_event actio
     //notify UI
     String msg = "sig ";
     msg+= (int)action;
-    sendActionMessage(msg);
+    //sendActionMessage(msg);
 }
 
 void MapperInputThread::mapActionFn(mapper_map map, mapper_record_event action) const
@@ -155,6 +155,9 @@ void MapperInputThread::sigUpdate(mapper_signal sig, mapper_id instance, const v
     //return;
     DBG("instance sig update function");
     
+    mapper::Signal Sig(sig);
+    String msg;
+    
     if (value) {
         printf("--> destination got %s", mapper_signal_name(sig));
         int len = mapper_signal_length(sig);
@@ -174,15 +177,16 @@ void MapperInputThread::sigUpdate(mapper_signal sig, mapper_id instance, const v
                     printf(" %f", v[i]);
                 }
                 lastVal = (double) v[0];
+                //NOTE: the visualizer for now only uses the first value!!
                 DBG(" f; set to "<<lastVal);
-                if (strcmp("in1",  mapper_signal_name(sig))==0)
-                    lastVals[0] = lastVal;
-                if (strcmp("in2",  mapper_signal_name(sig))==0)
-                    lastVals[1] = lastVal;
-                if (strcmp("in3",  mapper_signal_name(sig))==0)
-                    lastVals[2] = lastVal;
-                if (strcmp("in4",  mapper_signal_name(sig))==0)
-                    lastVals[3] = lastVal;
+//                if (strcmp("in1",  mapper_signal_name(sig))==0)
+//                    lastVals[0] = lastVal;
+//                if (strcmp("in2",  mapper_signal_name(sig))==0)
+//                    lastVals[1] = lastVal;
+//                if (strcmp("in3",  mapper_signal_name(sig))==0)
+//                    lastVals[2] = lastVal;
+//                if (strcmp("in4",  mapper_signal_name(sig))==0)
+//                    lastVals[3] = lastVal;
                 break;
             }
             case 'd': {
@@ -191,12 +195,14 @@ void MapperInputThread::sigUpdate(mapper_signal sig, mapper_id instance, const v
                     printf(" %f", v[i]);
                 }
                 lastVal = v[0];
-                DBG(" d; set to "<<lastVal);
+                DBG("set to "<<lastVal);
             }
         }
         printf("\n");
 
     }
+    lastSigName = Sig.name();
+    sendActionMessage("sig_changed");
     
     
     sendChangeMessage();

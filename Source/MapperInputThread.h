@@ -53,6 +53,7 @@ public:
                        int count, mapper_timetag_t *timetag);
     const double getLastVal() {return lastVal;}
     const double* getLastVals() {return lastVals;}
+    const String getLastChangedSigname() {return lastSigName;}
     
 private:
     std::unique_ptr<mapper::Device> myMapperDev;
@@ -60,6 +61,7 @@ private:
     //std::vector<mapper::Signal*> myInputSigs;
     
     double lastVal;
+    String lastSigName;
     double lastVals[4];
     
 };

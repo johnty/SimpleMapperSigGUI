@@ -98,10 +98,11 @@ void MainComponent::changeListenerCallback(ChangeBroadcaster *source)
 
 void MainComponent::actionListenerCallback(const String &message)
 {
-    bool is_dev = false, is_map = false, is_sig = false, is_add = false, is_mod = false, is_rem = false;
+    bool is_dev = false, is_map = false, is_sig = false, is_add = false, is_mod = false, is_rem = false, is_sigchanged = false;
     DBG(message);
     if (message.contains("dev")) is_dev = true;
     if (message.contains("sig")) is_sig = true;
+    if (message.contains("sig_changed")) is_sigchanged = true;
     if (message.contains("map")) is_map = true;
     
     //there must be a more elegant way to do this...
@@ -129,5 +130,14 @@ void MainComponent::actionListenerCallback(const String &message)
         mySigDisplay->removeBall();
     }
     
+    if (is_sig) {
+    
+    }
+    
+    if (is_sigchanged) {
+        double new_size = myMapperInput->getLastVal();
+        String sig_name = myMapperInput->getLastChangedSigname();
+        mySigDisplay->setBallSize(new_size); //todo: send name of sig too
+    }
     
 }
