@@ -94,6 +94,13 @@ public:
         addAndMakeVisible(newBall);
     }
     
+    void setBallSize(float size, int idx=0) //todo: just use sig name
+    {
+        if (balls.size()) {
+            balls[0]->setSize(size, size);
+        }
+    }
+    
     void removeBall() {
         balls.removeLast();
     }

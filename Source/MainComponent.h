@@ -41,6 +41,8 @@ private:
     
     Array<Component::SafePointer<Component>> windows;
     
+    std::vector<NamedValueSet> mySigVals;
+    
     std::vector<Slider> mySigSliders;
     
     Slider sigSlider;
