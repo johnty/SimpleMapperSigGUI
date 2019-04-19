@@ -34,7 +34,7 @@ MainComponent::MainComponent()
     sigLabel.attachToComponent(&sigSlider, true);
     
     //sig display window
-    mySigDisplay = new SigDisplayWindow(0);
+    mySigDisplay= new SigDisplayWindow(0);
     mySigDisplay->addToDesktop (ComponentPeer::windowIsTemporary);
     //windows.add (mySigDisplay);
     
@@ -57,6 +57,9 @@ MainComponent::MainComponent()
 
 MainComponent::~MainComponent()
 {
+    for (auto& window : windows)
+        window.deleteAndZero();
+    windows.clear();
     DBG("Main destructor\n");
 }
 

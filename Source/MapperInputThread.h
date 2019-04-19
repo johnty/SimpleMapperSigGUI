@@ -12,6 +12,9 @@
 
 #include "mapper/mapper_cpp.h"
 #include "JuceHeader.h"
+//#include "SigDisplayWindow.h"
+
+#define DEVICE_NAME_STR "inputvis"
 
 class MapperInputThread : public Thread, public ChangeBroadcaster, public ActionBroadcaster
 {
@@ -61,5 +64,7 @@ private:
     
     double lastVal;
     double lastVals[4];
+    
+    //Array<Component::SafePointer<Component>> myDevWindows;
     
 };

@@ -11,7 +11,7 @@
 #include "MapperInputThread.h"
 
 MapperInputThread::MapperInputThread(): Thread("MapperInputThread"),
-                                        myMapperDev(new mapper::Device("inputvis")),
+                                        myMapperDev(new mapper::Device(DEVICE_NAME_STR)),
                                         myMapperDB(new mapper::Database(MAPPER_OBJ_ALL))
 {
     //myMapperDev = new mapper::Device("inputvis");
@@ -82,6 +82,20 @@ void MapperInputThread::devActionFn(mapper_device dev, mapper_record_event actio
     String msg = "dev ";
     msg+= (int)action;
     sendActionMessage(msg);
+    
+    mapper::Device Dev(dev);
+    String name = Dev.name();
+    
+//    if (!name.contains(DEVICE_NAME_STR))
+//    {
+//        DBG("creating new dev window " <<Dev.name());
+//        auto* newDevWind = new SigDisplayWindow(Dev.name());
+//        newDevWind->addToDesktop(ComponentPeer::windowIsTemporary);
+//        //myDevWindows.add(newDevWind);
+//    }
+    
+    
+    
 }
 
 void MapperInputThread::sigActionFn(mapper_signal sig, mapper_record_event action) const

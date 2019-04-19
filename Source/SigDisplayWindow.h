@@ -81,6 +81,11 @@ public:
         }
     }
     
+//    SigDisplayWindow(String name)
+//    {
+//        devName = name;
+//    }
+    
     void addBall()
     {
         auto* newBall = new SigDisplayComponent();
@@ -123,6 +128,7 @@ public:
 private:
     ComponentDragger dragger;
     OwnedArray<SigDisplayComponent> balls;
+    String devName;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SigDisplayWindow)
 };
