@@ -58,6 +58,8 @@ public:
     const double* getLastVals() {return lastVals;}
     const String getLastChangedSigname() {return lastSigName;}
     
+    mapper::Device* getDev() {return myMapperDev.get();} //do we have to?
+    
 private:
     std::unique_ptr<mapper::Device> myMapperDev;
     std::unique_ptr<mapper::Database> myMapperDB;

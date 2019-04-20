@@ -10,11 +10,12 @@
 #ifndef SigDisplayWindow_h
 #define SigDisplayWindow_h
 
+
 class SigDisplayComponent : public Component,
 public Timer
 {
 public:
-    SigDisplayComponent()
+    SigDisplayComponent(String name="sig_name") : sigName(name)
     {
         setInterceptsMouseClicks (false, false);
         
@@ -45,6 +46,10 @@ public:
     {
         g.setColour (colour);
         g.fillEllipse (ballBounds - getPosition().toFloat());
+        
+        g.setFont (12.0f);
+        g.setColour (Colours::white);
+        g.drawText(sigName, 0, 0, 120, 5, Justification::left);
     }
     
     void timerCallback() override
@@ -59,10 +64,13 @@ public:
         setBounds (ballBounds.getSmallestIntegerContainer());
     }
     
+    String getName() {return sigName;}
+    
 private:
     Colour colour;
     Rectangle<float> ballBounds;
     Point<float> direction;
+    String sigName;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SigDisplayComponent)
 };
@@ -86,12 +94,13 @@ public:
 //        devName = name;
 //    }
     
-    void addBall()
+    void addBall(String name="signal_name")
     {
-        auto* newBall = new SigDisplayComponent();
+        auto* newBall = new SigDisplayComponent(name);
         newBall->setSize(25,25);
         balls.add(newBall);
         addAndMakeVisible(newBall);
+        DBG("new ball name = "<<name);
     }
     
     void setBallSize(float size, int idx=0) //todo: just use sig name
@@ -103,6 +112,14 @@ public:
     
     void removeBall() {
         balls.removeLast();
+    }
+    
+    void remBall(String name) {
+        for (int i=0; i<balls.size(); i++) {
+            if (balls[i]->getName() == name) {
+                balls.remove(i);
+            }
+        }
     }
     
     void mouseDown (const MouseEvent& e) override

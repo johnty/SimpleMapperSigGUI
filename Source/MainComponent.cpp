@@ -101,7 +101,8 @@ void MainComponent::changeListenerCallback(ChangeBroadcaster *source)
 
 void MainComponent::actionListenerCallback(const String &message)
 {
-    bool is_dev = false, is_map = false, is_sig = false, is_add = false, is_mod = false, is_rem = false, is_sigchanged = false;
+   //clean up this bit
+    bool is_dev = false, is_map = false, is_sig = false, is_add = false, is_mod = false, is_rem = false, is_sigchanged = false, is_mappadd = false;
     DBG(message);
     if (message.contains("dev")) is_dev = true;
     if (message.contains("sig")) is_sig = true;
@@ -114,7 +115,6 @@ void MainComponent::actionListenerCallback(const String &message)
     switch (type) {
         case MAPPER_ADDED:
             is_add = true;
-            
             break;
         case MAPPER_REMOVED:
             is_rem = true;
@@ -126,11 +126,19 @@ void MainComponent::actionListenerCallback(const String &message)
             break;
     }
     
-    if (is_map && is_add) {
-        mySigDisplay->addBall();
+    if (message.contains("newmap")) {
+    //some potentially dangerous assumptions...
+        String sig_name = message.substring(message.indexOf(" "), message.length());
+        mySigDisplay->addBall(sig_name);
+        //DBG("UI newmap received "<<sig_name);
     }
+    if (message.contains("delmap")) {
+        String sig_name = message.substring(message.indexOf(" "), message.length());
+        mySigDisplay->remBall(sig_name);
+    }
+    
     if (is_map && is_rem) {
-        mySigDisplay->removeBall();
+        //mySigDisplay->removeBall();
     }
     
     if (is_sig) {
@@ -138,8 +146,14 @@ void MainComponent::actionListenerCallback(const String &message)
     }
     
     if (is_sigchanged) {
+        //some potentially dangerous assumptions...
+        String sig_name = message.substring(message.indexOf(" "), message.length());
+        //DBG("found signal: "<< myMapperInput->getDev()->signal(sig_name.toRawUTF8()).name());
+        
+        
+        //remove later
         double new_size = myMapperInput->getLastVal();
-        String sig_name = myMapperInput->getLastChangedSigname();
+        sig_name = myMapperInput->getLastChangedSigname();
         mySigDisplay->setBallSize(new_size); //todo: send name of sig too
     }
     

@@ -101,6 +101,8 @@ void MapperInputThread::devActionFn(mapper_device dev, mapper_record_event actio
 void MapperInputThread::sigActionFn(mapper_signal sig, mapper_record_event action) const
 {
     //DBG("instance sig action!");
+    //we use this to check for when an output signal is added
+    // this will then trigger the creation of a listener signal
     
     mapper::Signal Sig(sig);
     bool isRem = false;
@@ -108,9 +110,11 @@ void MapperInputThread::sigActionFn(mapper_signal sig, mapper_record_event actio
     
     DBG("sigAction - name: "<<Sig.name()<<" dir: "<<Sig.direction()<<" isRem: "<<(int)isRem);
     
+    //
+    
     if ((action == MAPPER_ADDED) && (Sig.direction() == MAPPER_DIR_OUTGOING)) {
-        String name = Sig.name();
-        name+= "_l";
+        String name = Sig.device().name()+"/"+Sig.name();
+        //name+= "_l";
         mapper::Signal newSig = myMapperDev->add_input_signal(name.toRawUTF8(), Sig.length(), 'f', 0, 0, 0, &MapperInputThread::sigUpdateHandler, (void*) this); //do we care about sig units, min/max etc?
         while (!myMapperDev->ready()) {
             myMapperDev->poll(50);
@@ -129,8 +133,9 @@ void MapperInputThread::sigActionFn(mapper_signal sig, mapper_record_event actio
         }
     }
     if ((action == MAPPER_REMOVED) && (Sig.direction() == MAPPER_DIR_OUTGOING)) {
-        String name = Sig.name();
-        name+= "_l";
+        String name = Sig.device().name()+"/"+Sig.name();
+        //String name = Sig.name();
+        //name+= "_l";
         DBG("trying to remove "<<name);
         mapper::Signal mysig = myMapperDev->signal(name.toRawUTF8());
         if ((mapper_signal)mysig != nullptr) {
@@ -151,9 +156,25 @@ void MapperInputThread::sigActionFn(mapper_signal sig, mapper_record_event actio
 void MapperInputThread::mapActionFn(mapper_map map, mapper_record_event action) const
 {
     //DBG("instance map action!");
-    String msg = "map ";
-    msg+= (int)action;
-    sendActionMessage(msg);
+    //this is when a map is created
+    //  we check here to see if it belongs to us, and if so, update the U
+    //newmap.destination().signal().
+    
+    if (action== MAPPER_ADDED) {
+        mapper::Map newmap = mapper::Map(map);
+        mapper::Signal Sig = newmap.source().signal();
+        String name = Sig.device().name()+"/"+Sig.name();
+        String msg = "newmap "+ name;
+        sendActionMessage(msg);
+    }
+    if (action==MAPPER_REMOVED) {
+        mapper::Map newmap = mapper::Map(map);
+        mapper::Signal Sig = newmap.source().signal();
+        String name = Sig.device().name()+"/"+Sig.name();
+        String msg = "delmap "+ name;
+        sendActionMessage(msg);
+    }
+    
 }
 
 void MapperInputThread::sigUpdateHandler(mapper_signal sig, mapper_id instance, const void *value,
@@ -216,7 +237,9 @@ void MapperInputThread::sigUpdate(mapper_signal sig, mapper_id instance, const v
 
     }
     lastSigName = Sig.name();
-    sendActionMessage("sig_changed");
+    msg = "sig_changed "+lastSigName;
+    sendActionMessage(msg);
+    
     
     
     sendChangeMessage();
