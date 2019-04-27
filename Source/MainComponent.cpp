@@ -53,6 +53,19 @@ MainComponent::MainComponent()
     mySigDisplay->setVisible (true);
     
     
+    
+    //options
+    addAndMakeVisible (comboBox);
+    comboBox.setBounds (10, 125, 200, 24);
+    comboBox.setEditableText (false);
+    comboBox.setJustificationType (Justification::centred);
+    
+    for (int i = 1; i < 5; ++i)
+        comboBox.addItem ("combo box item " + String (i), i);
+    
+    comboBox.setSelectedId (1);
+    
+    
 }
 
 MainComponent::~MainComponent()

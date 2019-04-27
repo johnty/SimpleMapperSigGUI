@@ -164,8 +164,16 @@ void MapperInputThread::mapActionFn(mapper_map map, mapper_record_event action) 
         mapper::Map newmap = mapper::Map(map);
         mapper::Signal Sig = newmap.source().signal();
         String name = Sig.device().name()+"/"+Sig.name();
-        String msg = "newmap "+ name;
-        sendActionMessage(msg);
+        if (newmap.destination().signal().name()==name) //only care about our inputs
+        {
+            String msg = "newmap "+ name;
+            sendActionMessage(msg);
+            //DBG("NEWMAP: from " << newmap.source().signal().name()<<" to "<< newmap.destination().signal().name());
+        }
+        else {
+            //DBG("not local don't add");
+        }
+        
     }
     if (action==MAPPER_REMOVED) {
         mapper::Map newmap = mapper::Map(map);

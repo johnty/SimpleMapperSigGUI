@@ -51,5 +51,7 @@ private:
     Slider sigSlider3;
     Label sigLabel;
     
+    ComboBox comboBox  { "Options" };
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
