@@ -39,7 +39,7 @@ public:
     
     void setSize(float w, float h)
     {
-        ballBounds.setSize(w, h);
+        ballBounds.setSize(50+2.5*w, 50+2.5*h);
     }
     
     void paint (Graphics& g) override
@@ -47,7 +47,7 @@ public:
         g.setColour (colour);
         g.fillEllipse (ballBounds - getPosition().toFloat());
         
-        g.setFont (12.0f);
+        g.setFont (7.0f);
         g.setColour (Colours::white);
         g.drawText(sigName, 0, 0, 120, 5, Justification::left);
     }
@@ -103,10 +103,21 @@ public:
         DBG("new ball name = "<<name);
     }
     
-    void setBallSize(float size, int idx=0) //todo: just use sig name
+    void setBallSize(float size, int idx=0)
     {
-        if (balls.size()) {
-            balls[0]->setSize(size, size);
+        if (idx<balls.size()) {
+            balls[idx]->setSize(size, size);
+        }
+    }
+    
+    void setBallSize(float size, String name) //not the most efficient way to do this
+    {
+        for (int i=0; i<balls.size(); i++)
+        {
+            if (balls[i]->getName().equalsIgnoreCase(name))
+            {
+                balls[i]->setSize(size,size);
+            }
         }
     }
     

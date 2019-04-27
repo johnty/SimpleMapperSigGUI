@@ -141,12 +141,12 @@ void MainComponent::actionListenerCallback(const String &message)
     
     if (message.contains("newmap")) {
     //some potentially dangerous assumptions...
-        String sig_name = message.substring(message.indexOf(" "), message.length());
+        String sig_name = message.substring(message.indexOf(" ")+1, message.length());
         mySigDisplay->addBall(sig_name);
         //DBG("UI newmap received "<<sig_name);
     }
     if (message.contains("delmap")) {
-        String sig_name = message.substring(message.indexOf(" "), message.length());
+        String sig_name = message.substring(message.indexOf(" ")+1, message.length());
         mySigDisplay->remBall(sig_name);
     }
     
@@ -167,7 +167,7 @@ void MainComponent::actionListenerCallback(const String &message)
         //remove later
         double new_size = myMapperInput->getLastVal();
         sig_name = myMapperInput->getLastChangedSigname();
-        mySigDisplay->setBallSize(new_size); //todo: send name of sig too
+        mySigDisplay->setBallSize(new_size, sig_name); //todo: send name of sig too
     }
     
 }
