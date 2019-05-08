@@ -197,7 +197,6 @@ void MapperInputThread::sigUpdate(mapper_signal sig, mapper_id instance, const v
 {
     //return;
     DBG("instance sig update function");
-    
     mapper::Signal Sig(sig);
     String msg;
     
@@ -246,10 +245,12 @@ void MapperInputThread::sigUpdate(mapper_signal sig, mapper_id instance, const v
     }
     lastSigName = Sig.name();
     msg = "sig_changed "+lastSigName;
+    DBG(msg<<":"<<Time::getCurrentTime().toMilliseconds() % 10000);
+    
     sendActionMessage(msg);
     
     
     
-    sendChangeMessage();
+    //sendChangeMessage();
     
 }

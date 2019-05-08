@@ -116,7 +116,7 @@ void MainComponent::actionListenerCallback(const String &message)
 {
    //clean up this bit
     bool is_dev = false, is_map = false, is_sig = false, is_add = false, is_mod = false, is_rem = false, is_sigchanged = false, is_mappadd = false;
-    DBG(message);
+    DBG("actionCB: "<< message);
     if (message.contains("dev")) is_dev = true;
     if (message.contains("sig")) is_sig = true;
     if (message.contains("sig_changed")) is_sigchanged = true;
@@ -168,6 +168,8 @@ void MainComponent::actionListenerCallback(const String &message)
         double new_size = myMapperInput->getLastVal();
         sig_name = myMapperInput->getLastChangedSigname();
         mySigDisplay->setBallSize(new_size, sig_name); //todo: send name of sig too
+        DBG("actionCB: sig_change DONE:" << Time::getCurrentTime().toMilliseconds() % 10000);
     }
+    
     
 }

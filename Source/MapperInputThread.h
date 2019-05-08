@@ -14,7 +14,8 @@
 #include "JuceHeader.h"
 //#include "SigDisplayWindow.h"
 
-#define DEVICE_NAME_STR "inputvis"
+#define DEVICE_NAME_STR "libmapper_inputvis"
+//in webmapper, apply regexp: ^((?!libmapper_inputvis).)*$ to filter out this device!
 
 class MapperInputThread : public Thread, public ChangeBroadcaster, public ActionBroadcaster
 {
@@ -68,6 +69,8 @@ private:
     double lastVal;
     String lastSigName;
     double lastVals[4];
+    
+    Time t0;
     
     //Array<Component::SafePointer<Component>> myDevWindows;
     
